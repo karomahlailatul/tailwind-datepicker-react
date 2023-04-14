@@ -40,17 +40,17 @@ interface IDatePickerProviderProps {
 	options?: IOptions
 	onChange?: (date: Date) => void
 	show: boolean
-	setShow: (show: boolean) => void,
+	setShow: (show: boolean) => void
 	selectedDateState?: [Date, (date: Date) => void]
 }
 
 const DatePickerProvider = ({ children, options: customOptions, onChange, show, setShow, selectedDateState }: IDatePickerProviderProps) => {
 	const options = { ...defaultOptions, ...customOptions }
 	const [view, setView] = useState<Views>("days")
-	const [selectedDate, setSelectedDate] = selectedDateState || useState<Date || null>(options?.defaultDate ?? null)
+	const [selectedDate, setSelectedDate] = selectedDateState ? selectedDateState : useState<Date | null>(options?.defaultDate ?? null)
 	const [showSelectedDate, setShowSelectedDate] = useState<boolean>(true)
-	const selectedMonth = selectedDate.getMonth()
-	const selectedYear = selectedDate.getFullYear()
+	const selectedMonth = selectedDate ? selectedDate?.getMonth() : 0
+	const selectedYear = selectedDate ? selectedDate?.getFullYear() : 0
 
 	const changeSelectedDate = (action: "prev" | "next" | "date" | "today", date: Date) => {
 		if (options?.maxDate && date > options.maxDate) return
@@ -65,7 +65,20 @@ const DatePickerProvider = ({ children, options: customOptions, onChange, show, 
 
 	return (
 		<DatePickerContext.Provider
-			value={{ options, view, setView, show, setShow, selectedDate, changeSelectedDate, showSelectedDate, setShowSelectedDate, selectedMonth, selectedYear, getFormattedDate }}
+			value={{
+				options,
+				view,
+				setView,
+				show,
+				setShow,
+				selectedDate: selectedDate ? selectedDate : new Date(),
+				changeSelectedDate,
+				showSelectedDate,
+				setShowSelectedDate,
+				selectedMonth,
+				selectedYear,
+				getFormattedDate,
+			}}
 		>
 			{children}
 		</DatePickerContext.Provider>
